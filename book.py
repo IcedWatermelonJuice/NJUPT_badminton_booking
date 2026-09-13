@@ -241,8 +241,17 @@ def keepalive_ping(token):
 
 
 def main():
-    cfg = load_config()
     args = set(sys.argv[1:])
+
+    # 参数白名单：未知参数立刻退出，绝不静默执行真实预约
+    known = {"--slots", "--test", "--now", "--refresh"}
+    unknown = sorted(a for a in args if a not in known)
+    if unknown:
+        print(f"[-] 未知参数: {' '.join(unknown)}")
+        print("    可用参数: --slots(查看场次) / --test(演练，不预约) / --now(立即抢) / --refresh(刷新 token)")
+        return 2
+
+    cfg = load_config()
 
     # --refresh: 强制重新抓取 token 后退出（不预约）
     if "--refresh" in args:

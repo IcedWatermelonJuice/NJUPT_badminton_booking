@@ -30,28 +30,41 @@ import token_util
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config" / "config.yaml"
 ADDON_PATH = BASE_DIR / "token_capture_addon.py"
-MITM_BIN_DIR = Path("D:/Program Files/mitmproxy/bin")
 _INTERNET_SETTINGS = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
 
 
 # ---------------------------------------------------------------------------
 # 环境探测
 # ---------------------------------------------------------------------------
+def _mitm_bin_dirs():
+    """mitmdump 常见安装目录：%ProgramFiles% / %ProgramFiles(x86)% / %LocalAppData%。"""
+    dirs = []
+    for env_var in ("ProgramFiles", "ProgramFiles(x86)", "LocalAppData"):
+        base = os.environ.get(env_var)
+        if base:
+            dirs.append(Path(base) / "mitmproxy" / "bin")
+    return dirs
+
+
 def find_mitmdump():
-    # 1. 打包内置的便携版（dist/mitmproxy/bin/）
+    # 1. PATH（mitmproxy 安装时通常会加入环境变量）
+    import shutil
+    exe = shutil.which("mitmdump")
+    if exe:
+        return exe
+    # 2. %ProgramFiles% / %ProgramFiles(x86)% / %LocalAppData%\mitmproxy\bin
+    for d in _mitm_bin_dirs():
+        for name in ("mitmdump.exe", "mitmdump"):
+            p = d / name
+            if p.exists():
+                return str(p)
+    # 3. 打包内置的便携版（scripts/make_dist.py 产出的 dist/mitmproxy/bin）
     bundled = BASE_DIR / "mitmproxy" / "bin"
     for name in ("mitmdump.exe", "mitmdump"):
         p = bundled / name
         if p.exists():
             return str(p)
-    # 2. 本机常见安装路径
-    for name in ("mitmdump.exe", "mitmdump"):
-        p = MITM_BIN_DIR / name
-        if p.exists():
-            return str(p)
-    # 3. PATH
-    import shutil
-    return shutil.which("mitmdump")
+    return None
 
 
 def find_free_port(hint=8080):

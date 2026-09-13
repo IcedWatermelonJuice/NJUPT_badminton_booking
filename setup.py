@@ -70,6 +70,7 @@ def check_mitmproxy():
     print("[!] 未找到 mitmproxy。二选一：")
     print("    1) 内置版: 把 mitmproxy 目录放到本项目下（./mitmproxy/bin/mitmdump.exe）")
     print("    2) 自装版: 到 https://mitmproxy.org/downloads/ 下载 Windows 版安装")
+    print("       或直接执行: winget install -e --id mitmproxy.mitmproxy")
     return False
 
 
