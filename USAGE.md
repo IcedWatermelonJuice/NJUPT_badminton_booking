@@ -4,6 +4,9 @@
 
 ## 每日使用流程
 
+**懒人版：双击项目根目录的 `start.bat`**（右键 → 发送到 → 桌面快捷方式，以后双击快捷方式即可），
+它依次跑下面 1、2 两步，中间问你一句要不要改场地。想手动分步做，就按 1、2 来：
+
 1. **刷新 token**（每天预约前做一次）：
    ```
    python capture_token.py --wait 300
@@ -28,6 +31,7 @@ python configure.py
 
 | 命令 | 作用 |
 |---|---|
+| `start.bat` | **一键流程**：强制刷 token → 问要不要改场地 → 定时抢票 |
 | `python configure.py` | 配置向导 |
 | `python configure.py --slots` | 只看场地表格 |
 | `python capture_token.py --check` | 环境诊断 |
